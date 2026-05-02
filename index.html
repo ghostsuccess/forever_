@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GhostSuccess — Made With Love</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Unbounded:wght@200;300;400&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--rose:#f06b7b;--rose2:#c0445d;--deep:#080306;--gold:#e2b97a;--gold2:#c49550;--cream:#fef6f0;--wine:#3d0f1e}
+html{scroll-behavior:smooth}
+body{font-family:'Cormorant Garamond',serif;background:var(--deep);color:var(--cream);overflow-x:hidden;cursor:none}
+#cur{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--rose);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .15s,height .15s;mix-blend-mode:screen}
+#cur-ring{position:fixed;width:32px;height:32px;border-radius:50%;border:1px solid rgba(240,107,123,.35);pointer-events:none;z-index:9998;transform:translate(-50%,-50%)}
+#canvas{position:fixed;inset:0;pointer-events:none;z-index:0}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 40px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(20px);background:rgba(8,3,6,.6);border-bottom:1px solid rgba(240,107,123,.08)}
+.nav-logo{font-family:'Unbounded',sans-serif;font-weight:200;font-size:.78rem;letter-spacing:.35em;text-transform:uppercase;color:var(--cream);opacity:.9}
+.nav-logo span{color:var(--rose)}
+.nav-links{display:flex;gap:12px;align-items:center}
+.nav-link{padding:9px 22px;border-radius:50px;font-family:'Unbounded',sans-serif;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;cursor:none;transition:all .3s;text-decoration:none}
+.nav-link-demos{border:1px solid rgba(240,107,123,.3);background:transparent;color:rgba(254,246,240,.6)}
+.nav-link-demos:hover{border-color:var(--rose);color:var(--cream);background:rgba(240,107,123,.08)}
+.nav-link-order{border:1px solid rgba(37,211,102,.3);background:transparent;color:rgba(180,240,180,.65)}
+.nav-link-order:hover{border-color:#25d366;color:#25d366;background:rgba(37,211,102,.06)}
+#hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;overflow:hidden;z-index:1}
+.hero-bg{position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse 80% 60% at 20% 90%,rgba(61,15,30,.9) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 80% 10%,rgba(240,107,123,.12) 0%,transparent 55%),radial-gradient(ellipse 100% 100% at 50% 50%,#100408 0%,#080306 100%)}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:orbFloat ease-in-out infinite}
+.orb1{width:500px;height:500px;background:rgba(192,68,93,.18);top:-100px;left:-150px;animation-duration:14s;animation-delay:-3s}
+.orb2{width:400px;height:400px;background:rgba(240,107,123,.1);bottom:-80px;right:-100px;animation-duration:18s;animation-delay:-7s}
+.orb3{width:300px;height:300px;background:rgba(226,185,122,.07);top:40%;left:60%;animation-duration:22s;animation-delay:-11s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-40px) scale(1.05)}66%{transform:translate(-20px,25px) scale(.97)}}
+.hero-tag{font-family:'Unbounded',sans-serif;font-weight:200;font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;color:var(--rose);opacity:0;animation:fadeUp .8s .3s ease forwards;margin-bottom:24px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.hero-title{font-family:'Pinyon Script',cursive;font-size:clamp(4rem,12vw,9rem);line-height:1;color:var(--cream);opacity:0;animation:fadeUp 1.2s .5s ease forwards;margin-bottom:16px}
+.hero-title span{color:var(--rose)}
+.hero-sub{font-family:'Unbounded',sans-serif;font-weight:200;font-size:clamp(.55rem,.9vw,.72rem);letter-spacing:.3em;text-transform:uppercase;color:rgba(254,246,240,.35);opacity:0;animation:fadeUp .9s .8s ease forwards;margin-bottom:48px}
+.hero-poem{max-width:560px;font-style:italic;font-size:clamp(1.1rem,2.5vw,1.45rem);line-height:2;color:rgba(254,246,240,.65);opacity:0;animation:fadeUp 1s 1s ease forwards;margin-bottom:56px}
+.hero-poem em{color:var(--gold);font-style:normal}
+.hero-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeUp .9s 1.3s ease forwards}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;padding:16px 40px;border-radius:50px;background:linear-gradient(135deg,var(--rose),var(--rose2));color:white;font-family:'Unbounded',sans-serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;cursor:none;transition:transform .28s,box-shadow .28s;box-shadow:0 8px 32px rgba(240,107,123,.4);position:relative;overflow:hidden}
+.btn-primary::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent)}
+.btn-primary:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 14px 44px rgba(240,107,123,.55)}
+.btn-secondary{display:inline-flex;align-items:center;gap:10px;padding:16px 40px;border-radius:50px;border:1px solid rgba(226,185,122,.3);background:transparent;color:rgba(226,185,122,.8);font-family:'Unbounded',sans-serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;cursor:none;transition:all .28s}
+.btn-secondary:hover{border-color:var(--gold);color:var(--gold);background:rgba(226,185,122,.06);box-shadow:0 8px 30px rgba(226,185,122,.15);transform:translateY(-3px)}
+.scroll-hint{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:fadeUp .8s 2s ease forwards}
+.scroll-hint span{font-family:'Unbounded',sans-serif;font-size:.5rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(254,246,240,.2)}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,rgba(240,107,123,.5),transparent);animation:scrollPulse 2s ease-in-out infinite}
+@keyframes scrollPulse{0%,100%{opacity:.4;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.2)}}
+#strip{position:relative;padding:100px 0;overflow:hidden;z-index:1}
+#strip::before,#strip::after{content:'';position:absolute;top:0;bottom:0;width:200px;z-index:2;pointer-events:none}
+#strip::before{left:0;background:linear-gradient(to right,var(--deep),transparent)}
+#strip::after{right:0;background:linear-gradient(to left,var(--deep),transparent)}
+.strip-label{text-align:center;margin-bottom:48px}
+.strip-label p{font-family:'Unbounded',sans-serif;font-weight:200;font-size:.58rem;letter-spacing:.4em;text-transform:uppercase;color:rgba(240,107,123,.5)}
+.strip-label h2{font-family:'Pinyon Script',cursive;font-size:clamp(2.5rem,6vw,4rem);color:var(--cream);line-height:1.1;margin-top:8px}
+.track-wrap{overflow:hidden}
+.track{display:flex;gap:24px;animation:scroll 32s linear infinite;width:max-content}
+.track:hover{animation-play-state:paused}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.screenshot-card{flex-shrink:0;width:260px;height:460px;border-radius:22px;overflow:hidden;position:relative;border:1px solid rgba(240,107,123,.15);box-shadow:0 20px 60px rgba(0,0,0,.5);transition:transform .4s,box-shadow .4s}
+.screenshot-card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 40px rgba(240,107,123,.15)}
+.mock-screen{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+.mock-1{background:radial-gradient(ellipse at 30% 80%,rgba(92,20,40,.8),transparent 60%),radial-gradient(ellipse at 70% 20%,rgba(240,107,123,.15),transparent 50%),#100408}
+.mock-2{background:radial-gradient(ellipse at 70% 30%,rgba(61,15,30,.9),transparent 60%),#0a0206}
+.mock-3{background:radial-gradient(ellipse at 50% 60%,rgba(226,185,122,.08),transparent 60%),#0d0408}
+.mock-4{background:radial-gradient(ellipse at 20% 40%,rgba(192,68,93,.2),transparent 55%),#080306}
+.mock-a1{background:radial-gradient(ellipse at 30% 80%,rgba(61,36,8,.85),transparent 60%),radial-gradient(ellipse at 70% 20%,rgba(232,169,90,.12),transparent 50%),#130e07}
+.mock-a2{background:radial-gradient(ellipse at 70% 30%,rgba(40,24,5,.9),transparent 60%),#0a0703}
+.mock-a3{background:radial-gradient(ellipse at 50% 60%,rgba(240,204,128,.06),transparent 60%),#0d0906}
+.mock-icon{font-size:2.2rem;margin-bottom:16px;animation:floatIcon 4s ease-in-out infinite}
+@keyframes floatIcon{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.mock-title{font-family:'Pinyon Script',cursive;font-size:1.8rem;color:var(--cream);line-height:1.2;margin-bottom:10px}
+.mock-title span{color:var(--rose)}
+.mock-title .amber{color:#e8a95a}
+.mock-body{font-style:italic;font-size:.82rem;line-height:1.7;color:rgba(254,246,240,.45)}
+.mock-tag{font-family:'Unbounded',sans-serif;font-size:.45rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(240,107,123,.5);margin-top:16px}
+.mock-tag.at{color:rgba(232,169,90,.5)}
+.mock-pill{display:inline-block;padding:5px 14px;border-radius:50px;border:1px solid rgba(240,107,123,.25);font-family:'Unbounded',sans-serif;font-size:.42rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(240,107,123,.7);margin-top:14px}
+.mock-pill.gold{border-color:rgba(226,185,122,.25);color:rgba(226,185,122,.7)}
+.mock-pill.amber{border-color:rgba(232,169,90,.3);color:rgba(232,169,90,.7)}
+.mock-dots{display:flex;gap:8px;justify-content:center;margin:12px 0}
+.mock-dot{width:7px;height:7px;border-radius:50%;background:rgba(240,107,123,.25)}
+.mock-dot.on{background:var(--rose);box-shadow:0 0 8px rgba(240,107,123,.5)}
+.mock-dot.ao{background:#e8a95a;box-shadow:0 0 8px rgba(232,169,90,.5)}
+/* DEMOS */
+#demos{position:relative;padding:120px 24px;z-index:1;text-align:center}
+.demos-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(61,15,30,.35),transparent 70%)}
+.demos-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:860px;margin:56px auto 0}
+.demo-card{border-radius:28px;padding:44px 36px;position:relative;overflow:hidden;transition:transform .35s,box-shadow .35s;text-align:left}
+.demo-card:hover{transform:translateY(-6px)}
+.demo-card::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px}
+.demo-card-60{background:rgba(255,255,255,.025);border:1px solid rgba(254,246,240,.08);box-shadow:0 24px 80px rgba(0,0,0,.4)}
+.demo-card-60::before{background:linear-gradient(to right,transparent,rgba(254,246,240,.2),transparent)}
+.demo-card-60:hover{box-shadow:0 36px 100px rgba(0,0,0,.5),0 0 40px rgba(254,246,240,.04)}
+.demo-card-100{background:linear-gradient(145deg,rgba(61,36,8,.6),rgba(232,169,90,.06),rgba(61,36,8,.5));border:1px solid rgba(232,169,90,.2);box-shadow:0 24px 80px rgba(0,0,0,.4),0 0 60px rgba(232,169,90,.05)}
+.demo-card-100::before{background:linear-gradient(to right,transparent,rgba(232,169,90,.5),transparent)}
+.demo-card-100:hover{box-shadow:0 36px 100px rgba(0,0,0,.5),0 0 80px rgba(232,169,90,.1)}
+.demo-badge{display:inline-block;padding:4px 14px;border-radius:50px;font-family:'Unbounded',sans-serif;font-size:.42rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:20px}
+.demo-badge-60{background:rgba(255,255,255,.05);border:1px solid rgba(254,246,240,.1);color:rgba(254,246,240,.4)}
+.demo-badge-100{background:rgba(232,169,90,.1);border:1px solid rgba(232,169,90,.25);color:rgba(232,169,90,.7)}
+.demo-icon{font-size:2rem;display:block;margin-bottom:16px;animation:floatIcon 4s ease-in-out infinite}
+.demo-name{font-family:'Unbounded',sans-serif;font-weight:300;font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;margin-bottom:10px}
+.demo-card-60 .demo-name{color:rgba(254,246,240,.45)}
+.demo-card-100 .demo-name{color:rgba(232,169,90,.65)}
+.demo-title{font-family:'Pinyon Script',cursive;font-size:2.4rem;color:var(--cream);line-height:1.2;margin-bottom:14px}
+.demo-desc{font-style:italic;font-size:.98rem;line-height:1.8;margin-bottom:24px}
+.demo-card-60 .demo-desc{color:rgba(254,246,240,.45)}
+.demo-card-100 .demo-desc{color:rgba(245,230,200,.5)}
+.demo-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+.demo-tag{padding:5px 14px;border-radius:50px;font-style:italic;font-size:.8rem}
+.demo-card-60 .demo-tag{border:1px solid rgba(240,107,123,.18);color:rgba(254,246,240,.38)}
+.demo-card-100 .demo-tag{border:1px solid rgba(232,169,90,.18);color:rgba(245,230,200,.38)}
+.demo-btn{display:inline-flex;align-items:center;gap:10px;padding:14px 32px;border-radius:50px;font-family:'Unbounded',sans-serif;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;cursor:none;transition:all .28s;position:relative;overflow:hidden;border:none}
+.demo-btn-60{background:linear-gradient(135deg,var(--rose),var(--rose2));color:white;box-shadow:0 6px 24px rgba(240,107,123,.35)}
+.demo-btn-60::after,.demo-btn-100::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent)}
+.demo-btn-60:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 10px 36px rgba(240,107,123,.5)}
+.demo-btn-100{background:linear-gradient(135deg,#e8a95a,#c47d2e);color:white;box-shadow:0 6px 24px rgba(232,169,90,.35)}
+.demo-btn-100:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 10px 36px rgba(232,169,90,.5)}
+.demo-price-tag{position:absolute;top:20px;right:24px;font-family:'Pinyon Script',cursive;font-size:2.2rem;line-height:1}
+.demo-card-60 .demo-price-tag{color:rgba(254,246,240,.12)}
+.demo-card-100 .demo-price-tag{color:rgba(232,169,90,.18)}
+.demo-hint{margin-top:14px;font-size:.72rem;font-style:italic;color:rgba(254,246,240,.22)}
+.demo-card-60 .demo-hint span{color:rgba(240,107,123,.5)}
+.demo-card-100 .demo-hint span{color:rgba(232,169,90,.55)}
+/* FOR SECTION */
+#for{position:relative;padding:120px 24px;text-align:center;z-index:1}
+.for-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(61,15,30,.4),transparent 70%)}
+.section-label{font-family:'Unbounded',sans-serif;font-weight:200;font-size:.58rem;letter-spacing:.4em;text-transform:uppercase;color:rgba(240,107,123,.5);margin-bottom:20px}
+.section-title{font-family:'Pinyon Script',cursive;font-size:clamp(2.8rem,7vw,5rem);color:var(--cream);line-height:1.1;margin-bottom:50px}
+.for-poem{max-width:680px;margin:0 auto 60px;font-style:italic;font-size:clamp(1.15rem,2.5vw,1.5rem);line-height:2.2;color:rgba(254,246,240,.65)}
+.for-poem em{color:var(--gold);font-style:normal;position:relative}
+.for-poem em::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent)}
+.for-tags{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:40px}
+.for-tag{padding:10px 24px;border-radius:50px;border:1px solid rgba(254,246,240,.1);background:rgba(255,255,255,.025);font-size:.88rem;font-style:italic;color:rgba(254,246,240,.55);transition:all .3s}
+.for-tag:hover{border-color:rgba(240,107,123,.3);color:rgba(254,246,240,.8);background:rgba(240,107,123,.05);transform:translateY(-2px)}
+/* PRICING */
+#pricing{position:relative;padding:120px 24px;z-index:1}
+.pricing-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(61,15,30,.5),transparent 65%)}
+.pricing-head{text-align:center;margin-bottom:70px}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:820px;margin:0 auto}
+.tier{border-radius:28px;padding:52px 44px;position:relative;overflow:hidden;transition:transform .35s,box-shadow .35s}
+.tier:hover{transform:translateY(-6px)}
+.tier-1{background:rgba(255,255,255,.025);border:1px solid rgba(254,246,240,.08);box-shadow:0 24px 80px rgba(0,0,0,.4)}
+.tier-1:hover{box-shadow:0 36px 100px rgba(0,0,0,.5)}
+.tier-1::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(to right,transparent,rgba(254,246,240,.2),transparent)}
+.tier-2{background:linear-gradient(145deg,rgba(61,15,30,.6),rgba(192,68,93,.12),rgba(61,15,30,.5));border:1px solid rgba(240,107,123,.25);box-shadow:0 24px 80px rgba(0,0,0,.4),0 0 80px rgba(240,107,123,.06)}
+.tier-2:hover{box-shadow:0 36px 100px rgba(0,0,0,.5),0 0 100px rgba(240,107,123,.12)}
+.tier-2::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(to right,transparent,rgba(240,107,123,.6),transparent)}
+.popular-badge{position:absolute;top:20px;right:20px;padding:5px 16px;border-radius:50px;background:linear-gradient(135deg,var(--rose),var(--rose2));font-family:'Unbounded',sans-serif;font-size:.45rem;letter-spacing:.2em;text-transform:uppercase;color:white;box-shadow:0 4px 16px rgba(240,107,123,.4)}
+.tier-icon{font-size:2rem;margin-bottom:20px;display:block}
+.tier-name{font-family:'Unbounded',sans-serif;font-weight:300;font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;margin-bottom:12px}
+.tier-1 .tier-name{color:rgba(254,246,240,.5)}
+.tier-2 .tier-name{color:rgba(240,107,123,.7)}
+.tier-price{font-family:'Pinyon Script',cursive;font-size:5rem;line-height:1;margin-bottom:6px}
+.tier-1 .tier-price{color:var(--cream)}
+.tier-2 .tier-price{color:var(--rose)}
+.tier-currency{font-family:'Unbounded',sans-serif;font-weight:200;font-size:.6rem;letter-spacing:.2em;color:rgba(254,246,240,.3);margin-bottom:28px}
+.tier-divider{height:1px;margin:24px 0}
+.tier-1 .tier-divider{background:linear-gradient(to right,transparent,rgba(254,246,240,.1),transparent)}
+.tier-2 .tier-divider{background:linear-gradient(to right,transparent,rgba(240,107,123,.3),transparent)}
+.tier-features{list-style:none;display:flex;flex-direction:column;gap:14px;margin-bottom:18px}
+.tier-features li{display:flex;align-items:flex-start;gap:12px;font-style:italic;font-size:1rem;line-height:1.5}
+.tier-1 .tier-features li{color:rgba(254,246,240,.55)}
+.tier-2 .tier-features li{color:rgba(254,246,240,.75)}
+.feat-icon{font-size:.9rem;flex-shrink:0;margin-top:2px}
+.tier-demo-link{display:block;text-align:center;font-style:italic;font-size:.82rem;text-decoration:none;transition:color .3s;letter-spacing:.05em;margin-bottom:14px}
+.tier-1 .tier-demo-link{color:rgba(254,246,240,.28)}
+.tier-1 .tier-demo-link:hover{color:rgba(254,246,240,.6)}
+.tier-2 .tier-demo-link{color:rgba(240,107,123,.35)}
+.tier-2 .tier-demo-link:hover{color:rgba(240,107,123,.65)}
+.tier-btn{display:block;width:100%;padding:15px;border-radius:50px;text-align:center;font-family:'Unbounded',sans-serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;cursor:none;transition:all .3s}
+.tier-1 .tier-btn{background:rgba(255,255,255,.05);border:1px solid rgba(254,246,240,.12);color:rgba(254,246,240,.6)}
+.tier-1 .tier-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(254,246,240,.25);color:var(--cream)}
+.tier-2 .tier-btn{background:linear-gradient(135deg,var(--rose),var(--rose2));border:none;color:white;box-shadow:0 8px 28px rgba(240,107,123,.4)}
+.tier-2 .tier-btn:hover{box-shadow:0 12px 40px rgba(240,107,123,.6);transform:translateY(-2px)}
+/* HOW */
+#how{padding:120px 24px;text-align:center;position:relative;z-index:1}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:860px;margin:60px auto 0}
+.step{padding:36px 28px;border-radius:24px;background:rgba(255,255,255,.02);border:1px solid rgba(254,246,240,.06);transition:transform .3s,border-color .3s}
+.step:hover{transform:translateY(-5px);border-color:rgba(240,107,123,.2)}
+.step-num{font-family:'Unbounded',sans-serif;font-weight:200;font-size:2.5rem;color:rgba(240,107,123,.15);margin-bottom:16px;line-height:1}
+.step-icon{font-size:1.8rem;margin-bottom:14px;display:block}
+.step-title{font-family:'Unbounded',sans-serif;font-weight:300;font-size:.65rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(254,246,240,.6);margin-bottom:12px}
+.step-body{font-style:italic;font-size:1rem;line-height:1.75;color:rgba(254,246,240,.4)}
+/* SEND */
+#send{padding:100px 24px;z-index:1;position:relative}
+.send-inner{max-width:680px;margin:0 auto;text-align:center}
+.send-card{margin-top:48px;background:rgba(255,255,255,.02);border:1px solid rgba(226,185,122,.15);border-radius:24px;padding:48px 44px;backdrop-filter:blur(12px);text-align:left;position:relative}
+.send-card::before{content:'';position:absolute;top:0;left:25%;right:25%;height:1px;background:linear-gradient(to right,transparent,rgba(226,185,122,.4),transparent)}
+.send-title{font-style:italic;font-size:1.25rem;color:rgba(254,246,240,.65);margin-bottom:28px;text-align:center}
+.send-list{list-style:none;display:flex;flex-direction:column;gap:18px}
+.send-list li{display:flex;align-items:flex-start;gap:14px;font-size:1.05rem;color:rgba(254,246,240,.55);font-style:italic;line-height:1.6}
+.send-list li span.bullet{width:22px;height:22px;border-radius:50%;border:1px solid rgba(226,185,122,.25);display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0;margin-top:2px;color:rgba(226,185,122,.6);font-style:normal}
+.send-note{margin-top:28px;padding-top:24px;border-top:1px solid rgba(254,246,240,.06);font-style:italic;font-size:.9rem;color:rgba(226,185,122,.45);text-align:center}
+/* CTA */
+#cta{padding:140px 24px;text-align:center;position:relative;z-index:1;overflow:hidden}
+.cta-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(61,15,30,.7),transparent 70%)}
+.cta-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:rgba(240,107,123,.06);filter:blur(100px);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.cta-title{font-family:'Pinyon Script',cursive;font-size:clamp(3rem,8vw,6.5rem);color:var(--cream);line-height:1;margin-bottom:20px;position:relative}
+.cta-title span{color:var(--rose)}
+.cta-sub{font-style:italic;font-size:clamp(1rem,2vw,1.3rem);color:rgba(254,246,240,.45);margin-bottom:48px;position:relative}
+.cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;position:relative}
+.btn-whatsapp{display:inline-flex;align-items:center;gap:12px;padding:18px 44px;border-radius:50px;background:linear-gradient(135deg,#25d366,#128c4a);color:white;font-family:'Unbounded',sans-serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;cursor:none;transition:transform .28s,box-shadow .28s;box-shadow:0 8px 32px rgba(37,211,102,.3)}
+.btn-whatsapp:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 14px 44px rgba(37,211,102,.45)}
+.whatsapp-icon{width:18px;height:18px;fill:white}
+footer{padding:48px 24px;text-align:center;border-top:1px solid rgba(254,246,240,.06);position:relative;z-index:1}
+.footer-logo{font-family:'Unbounded',sans-serif;font-weight:200;font-size:.72rem;letter-spacing:.35em;text-transform:uppercase;color:rgba(254,246,240,.3);margin-bottom:12px}
+.footer-logo span{color:rgba(240,107,123,.5)}
+.footer-copy{font-style:italic;font-size:.88rem;color:rgba(254,246,240,.2)}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .9s ease,transform .9s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.15s}
+.reveal-delay-2{transition-delay:.3s}
+@media(max-width:768px){nav{padding:16px 20px}.pricing-grid,.demos-grid,.steps{grid-template-columns:1fr}.tier,.demo-card{padding:36px 26px}.send-card{padding:36px 26px}}
+@media(max-width:480px){.hero-btns,.cta-btns{flex-direction:column;align-items:center}.btn-primary,.btn-secondary,.btn-whatsapp{width:100%;justify-content:center}.screenshot-card{width:200px;height:360px}.nav-link-order{display:none}}
+</style>
+</head>
+<body>
+<div id="cur"></div>
+<div id="cur-ring"></div>
+<canvas id="canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Ghost<span>Success</span></div>
+  <div class="nav-links">
+    <a href="#demos" class="nav-link nav-link-demos" onclick="event.preventDefault();document.getElementById('demos').scrollIntoView({behavior:'smooth'})">View Demos</a>
+    <a href="https://api.whatsapp.com/send?phone=27773618272&text=Hi%2C%20I%20want%20to%20order%20a%20love%20page%20from%20GhostSuccess%20%F0%9F%8C%B9" target="_blank" class="nav-link nav-link-order">Order Now</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+  <p class="hero-tag">GhostSuccess · Made With Love</p>
+  <h1 class="hero-title">Words that<br><span>stay forever</span></h1>
+  <p class="hero-sub">a love experience · crafted just for them</p>
+  <p class="hero-poem">Not a message.<br>Not a card.<br><em>A moment they will never forget.</em><br>Built with intention.<br>Delivered with love.</p>
+  <div class="hero-btns">
+    <a href="#demos" onclick="event.preventDefault();document.getElementById('demos').scrollIntoView({behavior:'smooth'})" class="btn-primary">✨ See the Demos</a>
+    <a href="https://api.whatsapp.com/send?phone=27773618272&text=Hi%2C%20I%20want%20to%20order%20a%20love%20page%20from%20GhostSuccess%20%F0%9F%8C%B9" target="_blank" class="btn-secondary">🌹 Order Yours</a>
+  </div>
+  <div class="scroll-hint"><span>scroll</span><div class="scroll-line"></div></div>
+</section>
+
+<!-- STRIP -->
+<section id="strip">
+  <div class="strip-label reveal"><p>what it looks like</p><h2>The Experience</h2></div>
+  <div class="track-wrap">
+    <div class="track">
+      <div class="screenshot-card"><div class="mock-screen mock-1"><span class="mock-icon">🌹</span><div class="mock-title">Something<br>for <span>you</span></div><p class="mock-body">open with your heart</p><span class="mock-tag">tap anywhere to begin</span></div></div>
+      <div class="screenshot-card"><div class="mock-screen mock-2"><div class="mock-dots"><div class="mock-dot on"></div><div class="mock-dot on"></div><div class="mock-dot"></div><div class="mock-dot"></div></div><span class="mock-icon">💭</span><div class="mock-title" style="font-size:1.3rem">Do you know how special you are?</div><div style="display:flex;gap:10px;margin-top:18px"><span style="padding:8px 18px;border-radius:50px;background:linear-gradient(135deg,#f06b7b,#c0445d);font-family:sans-serif;font-size:.65rem;color:white">YES 🌸</span><span style="padding:8px 18px;border-radius:50px;border:1px solid rgba(255,255,255,.15);font-family:sans-serif;font-size:.65rem;color:rgba(254,246,240,.4)">No</span></div></div></div>
+      <div class="screenshot-card"><div class="mock-screen mock-3"><span class="mock-icon">💌</span><div class="mock-title" style="font-size:1.4rem">One last<br>thing…</div><div style="margin:14px 0;padding:10px 20px;border-radius:50px;border:1px solid rgba(240,107,123,.3);background:rgba(255,255,255,.04);font-family:sans-serif;font-size:.65rem;color:rgba(249,217,223,.3);text-align:center">our word…</div><span class="mock-tag">type the word that lives between us</span></div></div>
+      <div class="screenshot-card"><div class="mock-screen mock-4"><div class="mock-title" style="font-size:2.8rem;font-family:'Pinyon Script',cursive">Hey, <span>Sibahle</span> ❤️</div><div style="margin-top:14px;padding:14px;border-radius:14px;border:1px solid rgba(240,107,123,.12);background:rgba(255,255,255,.02)"><p style="font-style:italic;font-size:.78rem;line-height:1.8;color:rgba(254,246,240,.55)">You make everything better just by existing…</p></div><span class="mock-pill">his letter</span></div></div>
+      <div class="screenshot-card"><div class="mock-screen mock-1"><span class="mock-icon">🥀</span><div style="padding:14px;border-radius:14px;border:1px solid rgba(226,185,122,.2);background:rgba(255,255,255,.02);text-align:left"><p style="font-style:italic;font-size:.72rem;line-height:1.9;color:rgba(254,246,240,.6)">I don't say this enough either… but you make me feel seen. 🌸</p></div><span class="mock-pill gold">her reply</span></div></div>
+      <div class="screenshot-card"><div class="mock-screen mock-a1"><span class="mock-icon">🌸</span><div class="mock-title">Something<br>for <span class="amber">you</span></div><p class="mock-body">from the one you raised</p><span class="mock-tag at">tap anywhere to begin</span></div></div>
+      <div class="screenshot-card"><div class="mock-screen mock-a2"><div class="mock-dots"><div class="mock-dot ao"></div><div class="mock-dot ao"></div><div class="mock-dot"></div><div class="mock-dot"></div></div><span class="mock-icon">🕯️</span><div class="mock-title" style="font-size:1.25rem">Mama, do you know<br>how loved you are?</div><div style="display:flex;gap:10px;margin-top:16px"><span style="padding:8px 18px;border-radius:50px;background:linear-gradient(135deg,#e8a95a,#c47d2e);font-family:sans-serif;font-size:.65rem;color:white">Yes 🌼</span><span style="padding:8px 18px;border-radius:50px;border:1px solid rgba(255,255,255,.15);font-family:sans-serif;font-size:.65rem;color:rgba(254,246,240,.4)">No</span></div></div></div>
+      <div class="screenshot-card"><div class="mock-screen mock-a3"><div class="mock-title" style="font-size:2.8rem;font-family:'Pinyon Script',cursive">Hey, <span class="amber">Mama</span> 🌸</div><div style="margin-top:14px;padding:14px;border-radius:14px;border:1px solid rgba(232,169,90,.12);background:rgba(255,255,255,.02)"><p style="font-style:italic;font-size:.75rem;line-height:1.8;color:rgba(254,246,240,.55)">You gave me everything before I even knew what everything meant…</p></div><span class="mock-pill amber">her letter</span></div></div>
+      <div class="screenshot-card"><div class="mock-screen mock-a1"><span class="mock-icon">🤲</span><div style="padding:14px;border-radius:14px;border:1px solid rgba(240,204,128,.15);background:rgba(255,255,255,.02);text-align:center"><p style="font-style:italic;font-size:.72rem;line-height:2;color:rgba(254,246,240,.55)">May every good thing you poured into me come back to you a hundredfold. 🕯️</p></div><span class="mock-pill amber">a prayer</span></div></div>
+      <div class="screenshot-card"><div class="mock-screen mock-a2"><span class="mock-icon">🌸</span><div style="padding:14px;border-radius:14px;border:1px solid rgba(232,169,90,.18);background:rgba(255,255,255,.02);text-align:left"><p style="font-style:italic;font-size:.72rem;line-height:1.9;color:rgba(254,246,240,.6)">My baby… watching you grow has been the greatest thing I have ever done. 🌸</p></div><span class="mock-pill amber">mama's reply</span></div></div>
+      <!-- duplicate for seamless loop -->
+      <div class="screenshot-card"><div class="mock-screen mock-1"><span class="mock-icon">🌹</span><div class="mock-title">Something<br>for <span>you</span></div><p class="mock-body">open with your heart</p><span class="mock-tag">tap anywhere to begin</span></div></div>
+      <div class="screenshot-card"><div class="mock-screen mock-2"><div class="mock-dots"><div class="mock-dot on"></div><div class="mock-dot on"></div><div class="mock-dot"></div><div class="mock-dot"></div></div><span class="mock-icon">💭</span><div class="mock-title" style="font-size:1.3rem">Do you know how special you are?</div><div style="display:flex;gap:10px;margin-top:18px"><span style="padding:8px 18px;border-radius:50px;background:linear-gradient(135deg,#f06b7b,#c0445d);font-family:sans-serif;font-size:.65rem;color:white">YES 🌸</span><span style="padding:8px 18px;border-radius:50px;border:1px solid rgba(255,255,255,.15);font-family:sans-serif;font-size:.65rem;color:rgba(254,246,240,.4)">No</span></div></div></div>
+      <div class="screenshot-card"><div class="mock-screen mock-4"><div class="mock-title" style="font-size:2.8rem;font-family:'Pinyon Script',cursive">Hey, <span>Sibahle</span> ❤️</div><div style="margin-top:14px;padding:14px;border-radius:14px;border:1px solid rgba(240,107,123,.12);background:rgba(255,255,255,.02)"><p style="font-style:italic;font-size:.78rem;line-height:1.8;color:rgba(254,246,240,.55)">You make everything better just by existing…</p></div><span class="mock-pill">his letter</span></div></div>
+      <div class="screenshot-card"><div class="mock-screen mock-a1"><span class="mock-icon">🌸</span><div class="mock-title">Something<br>for <span class="amber">you</span></div><p class="mock-body">from the one you raised</p><span class="mock-tag at">tap anywhere to begin</span></div></div>
+      <div class="screenshot-card"><div class="mock-screen mock-a3"><div class="mock-title" style="font-size:2.8rem;font-family:'Pinyon Script',cursive">Hey, <span class="amber">Mama</span> 🌸</div><div style="margin-top:14px;padding:14px;border-radius:14px;border:1px solid rgba(232,169,90,.12);background:rgba(255,255,255,.02)"><p style="font-style:italic;font-size:.75rem;line-height:1.8;color:rgba(254,246,240,.55)">You gave me everything before I knew what everything meant…</p></div><span class="mock-pill amber">her letter</span></div></div>
+      <div class="screenshot-card"><div class="mock-screen mock-a2"><span class="mock-icon">🌸</span><div style="padding:14px;border-radius:14px;border:1px solid rgba(232,169,90,.18);background:rgba(255,255,255,.02);text-align:left"><p style="font-style:italic;font-size:.72rem;line-height:1.9;color:rgba(254,246,240,.6)">My baby… watching you grow has been the greatest thing I have ever done. 🌸</p></div><span class="mock-pill amber">mama's reply</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMOS -->
+<section id="demos">
+  <div class="demos-bg"></div>
+  <p class="section-label reveal">try before you decide</p>
+  <h2 class="section-title reveal">Live Demos</h2>
+  <p class="reveal" style="font-style:italic;font-size:1.1rem;color:rgba(254,246,240,.4);margin-top:-30px;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.8">Open them. Feel them. Then decide which one is right for your person.</p>
+  <div class="demos-grid">
+    <div class="demo-card demo-card-60 reveal">
+      <div class="demo-price-tag">R60</div>
+      <span class="demo-badge demo-badge-60">The Letter · R60</span>
+      <span class="demo-icon">🌹</span>
+      <p class="demo-name">For Couples</p>
+      <div class="demo-title">For Sibahle</div>
+      <p class="demo-desc">A love letter from him to her. The game questions, the typed letter, the password moment. One voice, one feeling.</p>
+      <div class="demo-tags">
+        <span class="demo-tag">💑 Romantic</span>
+        <span class="demo-tag">🎮 Interactive</span>
+        <span class="demo-tag">📸 Shareable</span>
+      </div>
+      <a href="https://ghostsuccess.github.io/thuly/" target="_blank" class="demo-btn demo-btn-60">✨ Open Demo</a>
+      <p class="demo-hint">Password: <span>forever</span></p>
+    </div>
+    <div class="demo-card demo-card-100 reveal reveal-delay-2">
+      <div class="demo-price-tag">R100</div>
+      <span class="demo-badge demo-badge-100">The Conversation · R100</span>
+      <span class="demo-icon">🌸</span>
+      <p class="demo-name">For Mothers</p>
+      <div class="demo-title">For Mama</div>
+      <p class="demo-desc">A daughter's words to her mother. Prayer, photo wall, her own reply. Two voices, one story. The version that stays.</p>
+      <div class="demo-tags">
+        <span class="demo-tag">🌸 Family</span>
+        <span class="demo-tag">🕯️ Prayer</span>
+        <span class="demo-tag">🖼️ Photo wall</span>
+        <span class="demo-tag">💬 Her reply</span>
+      </div>
+      <a href="https://ghostsuccess.github.io/mama/" target="_blank" class="demo-btn demo-btn-100">🌸 Open Demo</a>
+      <p class="demo-hint">Password: <span>myeverything</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IS THIS FOR -->
+<section id="for">
+  <div class="for-bg"></div>
+  <p class="section-label reveal">made for everyone who loves</p>
+  <h2 class="section-title reveal">Not just for lovers</h2>
+  <div class="for-poem reveal">
+    For the one who stayed when leaving was easier.<br>
+    For the friend who knows your silence better than your words.<br>
+    For the mother who gave everything <em>without asking for anything.</em><br>
+    For the sister who is your first home.<br>
+    For the partner who chooses you, <em>every single day.</em><br>
+    For anyone who deserves to know —<br>
+    <em>they are not forgotten.</em>
+  </div>
+  <div class="for-tags reveal">
+    <span class="for-tag">💑 Partners</span><span class="for-tag">👩‍👧 Mothers</span>
+    <span class="for-tag">👫 Best friends</span><span class="for-tag">👭 Sisters</span>
+    <span class="for-tag">👨‍👦 Fathers</span><span class="for-tag">🤝 Anyone you love</span>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="pricing-bg"></div>
+  <div class="pricing-head reveal">
+    <p class="section-label">simple &amp; honest</p>
+    <h2 class="section-title">Choose your experience</h2>
+  </div>
+  <div class="pricing-grid">
+    <div class="tier tier-1 reveal">
+      <span class="tier-icon">🌹</span>
+      <p class="tier-name">The Letter</p>
+      <div class="tier-price">R60</div>
+      <p class="tier-currency">once off · no hidden fees</p>
+      <div class="tier-divider"></div>
+      <ul class="tier-features">
+        <li><span class="feat-icon">✦</span>A beautiful personal love page built just for them</li>
+        <li><span class="feat-icon">✦</span>Custom name, message &amp; password</li>
+        <li><span class="feat-icon">✦</span>The interactive game questions</li>
+        <li><span class="feat-icon">✦</span>3 floating personal photos</li>
+        <li><span class="feat-icon">✦</span>Typing letter effect &amp; ambient music</li>
+        <li><span class="feat-icon">✦</span>Shareable screenshot card</li>
+      </ul>
+      <a href="https://ghostsuccess.github.io/thuly/" target="_blank" class="tier-demo-link">→ View demo first</a>
+      <a href="https://api.whatsapp.com/send?phone=27773618272&text=Hi%2C%20I%27d%20like%20The%20Letter%20(R60)%20please%20%F0%9F%8C%B9" target="_blank" class="tier-btn">Get The Letter</a>
+    </div>
+    <div class="tier tier-2 reveal reveal-delay-2">
+      <div class="popular-badge">Most Loved</div>
+      <span class="tier-icon">🥀</span>
+      <p class="tier-name">The Conversation</p>
+      <div class="tier-price">R100</div>
+      <p class="tier-currency">once off · no hidden fees</p>
+      <div class="tier-divider"></div>
+      <ul class="tier-features">
+        <li><span class="feat-icon">❤️</span>Everything in The Letter</li>
+        <li><span class="feat-icon">❤️</span>Her reply section — default or she writes her own</li>
+        <li><span class="feat-icon">❤️</span>Photo wall moment &amp; prayer section</li>
+        <li><span class="feat-icon">❤️</span>Framed shareable card — both voices together</li>
+        <li><span class="feat-icon">❤️</span>Feels like a shared moment, not a one-way letter</li>
+        <li><span class="feat-icon">❤️</span>The version that stays with them</li>
+      </ul>
+      <a href="https://ghostsuccess.github.io/mama/" target="_blank" class="tier-demo-link">→ View demo first</a>
+      <a href="https://api.whatsapp.com/send?phone=27773618272&text=Hi%2C%20I%27d%20like%20The%20Conversation%20(R100)%20please%20%F0%9F%A5%80" target="_blank" class="tier-btn">Get The Conversation</a>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <p class="section-label reveal">three simple steps</p>
+  <h2 class="section-title reveal">How it works</h2>
+  <div class="steps">
+    <div class="step reveal"><div class="step-num">01</div><span class="step-icon">💬</span><p class="step-title">You reach out</p><p class="step-body">Message us on WhatsApp and tell us which experience you want. We'll guide you through the rest.</p></div>
+    <div class="step reveal reveal-delay-1"><div class="step-num">02</div><span class="step-icon">📝</span><p class="step-title">You share the details</p><p class="step-body">Their name, your message, a password, and 3 photos. That's all we need to build something unforgettable.</p></div>
+    <div class="step reveal reveal-delay-2"><div class="step-num">03</div><span class="step-icon">🌹</span><p class="step-title">We deliver it</p><p class="step-body">Your personal love page is ready. Share the link and watch them experience every word you meant.</p></div>
+  </div>
+</section>
+
+<!-- WHAT TO SEND -->
+<section id="send">
+  <div class="send-inner">
+    <p class="section-label reveal">what we need from you</p>
+    <h2 class="section-title reveal">Ready to order?</h2>
+    <p class="reveal" style="font-style:italic;font-size:1.1rem;color:rgba(254,246,240,.45);margin-top:-30px">Send us these four things on WhatsApp and we'll handle the rest.</p>
+    <div class="send-card reveal">
+      <p class="send-title">When you message us, include:</p>
+      <ul class="send-list">
+        <li><span class="bullet">1</span>Their name — the person this is being made for</li>
+        <li><span class="bullet">2</span>Your message — what you want to say to them, in your own words</li>
+        <li><span class="bullet">3</span>A password — one word only the two of you would know</li>
+        <li><span class="bullet">4</span>3 photos — of them, of you both, or anything that means something</li>
+      </ul>
+      <p class="send-note">✦ Not sure what to write? Tell us about them and we'll write it for you.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-bg"></div>
+  <div class="cta-glow"></div>
+  <h2 class="cta-title reveal">Someone needs<br>to hear <span>this</span></h2>
+  <p class="cta-sub reveal">Don't let another day pass without saying it.</p>
+  <div class="cta-btns reveal">
+    <a href="https://api.whatsapp.com/send?phone=27773618272&text=Hi%2C%20I%20want%20to%20order%20a%20love%20page%20from%20GhostSuccess%20%F0%9F%8C%B9" target="_blank" class="btn-whatsapp">
+      <svg class="whatsapp-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Message on WhatsApp
+    </a>
+    <a href="#demos" onclick="event.preventDefault();document.getElementById('demos').scrollIntoView({behavior:'smooth'})" class="btn-secondary">✨ See the Demos</a>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-logo">Ghost<span>Success</span></p>
+  <p class="footer-copy">Made with love. Every single time. 🌹</p>
+</footer>
+
+<script>
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function tr(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(tr);})();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='16px';cur.style.height='16px';ring.style.width='48px';ring.style.height='48px';});
+  el.addEventListener('mouseleave',()=>{cur.style.width='8px';cur.style.height='8px';ring.style.width='32px';ring.style.height='32px';});
+});
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+let W,H,pts=[];
+function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;}
+resize();addEventListener('resize',resize);
+function rand(a,b){return a+Math.random()*(b-a);}
+function mkP(){const h=Math.random()<.15;return{x:rand(0,W),y:rand(H+10,H+60),size:rand(3,h?11:5),sy:rand(.25,.9),sx:rand(-.18,.18),op:rand(.04,.25),type:h?'h':'p',r:rand(0,Math.PI*2),rs:rand(-.01,.01),w:rand(0,Math.PI*2),ws:rand(.008,.02)};}
+function dh(x,y,s,o,r){ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.globalAlpha=o;ctx.fillStyle='#f06b7b';const h=s*.5;ctx.beginPath();ctx.moveTo(0,h*.4);ctx.bezierCurveTo(0,-h*.2,-h,-h*.2,-h,h*.4);ctx.bezierCurveTo(-h,h,0,h*1.6,0,h*1.6);ctx.bezierCurveTo(0,h*1.6,h,h,h,h*.4);ctx.bezierCurveTo(h,-h*.2,0,-h*.2,0,h*.4);ctx.fill();ctx.restore();}
+function dp(x,y,s,o,r){ctx.save();ctx.translate(x,y);ctx.rotate(r);ctx.globalAlpha=o;ctx.fillStyle=`hsl(${rand(340,358)},65%,70%)`;ctx.beginPath();ctx.ellipse(0,0,s*.35,s,0,0,Math.PI*2);ctx.fill();ctx.restore();}
+for(let i=0;i<30;i++){const p=mkP();p.y=rand(0,H);pts.push(p);}
+(function loop(){ctx.clearRect(0,0,W,H);pts.forEach((p,i)=>{p.y-=p.sy;p.w+=p.ws;p.x+=p.sx+Math.sin(p.w)*.2;p.r+=p.rs;p.type==='h'?dh(p.x,p.y,p.size,p.op,p.r):dp(p.x,p.y,p.size,p.op,p.r);if(p.y<-20)pts[i]=mkP();});requestAnimationFrame(loop);})();
+setInterval(()=>{pts.push(mkP());if(pts.length>42)pts.shift();},3000);
+</script>
+</body>
+</html>
